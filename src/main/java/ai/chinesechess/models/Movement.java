@@ -6,6 +6,15 @@ public class Movement {
     private int destRow;
     private int destCol;
 
+    public boolean isGameEnd() {
+        return isGameEnd;
+    }
+
+    public void setGameEnd(boolean gameEnd) {
+        isGameEnd = gameEnd;
+    }
+
+    private boolean isGameEnd;
     public String getMovementName() {
         return movementName;
     }

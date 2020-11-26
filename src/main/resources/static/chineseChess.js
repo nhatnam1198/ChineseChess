@@ -118,8 +118,14 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
     if(!isLegalMove(source, target))
         return "snapback";
 
+    if(board.position()[target] == 'rK'){
+        alert("GAME OVER YOU WIN");
+        return;
+    }
+
     // update chess board
     board.position(newPos)
+
     var settings = {
         "url": "http://localhost:6030/movement?position=",
         "method": "POST",
@@ -135,6 +141,9 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
         let fromCol = data.fromCol;
         let destRow = data.destRow;
         let destCol = data.destCol;
+        if(data.gameEnd == true){
+            alert("GAME OVER");
+        }
         console.log(data);
 
         let fromPosition = alphabetPositionMapper[fromRow.toString() + fromCol.toString()];
