@@ -111,21 +111,23 @@ function isLegalMove(source, target){
     return false;
 }
 function onDrop(source, target, piece, newPos, oldPos, orientation){
-    var isFetching = true;
-    console.log(isFetching);
-    $('.loader').show();
-    removeGreySquares();
-    if(source == target){
+    if(source === target){
         return 'snapback';
     }
-
-    if(!isLegalMove(source, target))
-        return "snapback";
-
     if(board.position()[target] == 'rK'){
         alert("GAME OVER YOU WIN");
         return;
     }
+    var isFetching = true;
+    console.log(isFetching);
+    $('.loader').show();
+    removeGreySquares();
+
+
+    if(!isLegalMove(source, target))
+        return "snapback";
+
+
 
     // update chess board
     board.position(newPos)
