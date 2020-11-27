@@ -27,6 +27,29 @@
     ></script>
 
     <title>Document</title>
+    <style>
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid blue;
+            border-right: 5px solid green;
+            border-bottom: 5px solid red;
+            width: 30px;
+            height: 30px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
 <!-- <div class="row mt-2">
@@ -34,8 +57,16 @@
     <canvas id="myCanvas">
     </canvas>
   </div>
-</div> --><h1>hello World</h1>
-<div id="myBoard" style="width: 600px"></div>
+</div> -->
+
+<div class="row" style="justify-content: center;display: flex">
+    <div class="col-md-12">
+        <h1 style="text-align: center">Chinese Chess</h1>
+    </div>
+    <div id="myBoard" style="width: 600px;position: relative"></div>
+    <div style="position: absolute;top: 60%" class="loader"></div>
+</div>
+
 
 </body>
 <script type="text/javascript" src="./chineseChess.js"></script>

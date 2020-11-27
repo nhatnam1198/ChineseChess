@@ -1,5 +1,6 @@
 $(document).ready(function () {
     init();
+    $('.loader').hide();
 });
 
 let board;
@@ -110,6 +111,9 @@ function isLegalMove(source, target){
     return false;
 }
 function onDrop(source, target, piece, newPos, oldPos, orientation){
+    var isFetching = true;
+    console.log(isFetching);
+    $('.loader').show();
     removeGreySquares();
     if(source == target){
         return 'snapback';
@@ -137,6 +141,9 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
     };
 
     $.ajax(settings).done(function (data) {
+        isFetching = false;
+        console.log(isFetching);
+        $('.loader').hide();
         let fromRow = data.fromRow;
         let fromCol = data.fromCol;
         let destRow = data.destRow;
@@ -157,7 +164,6 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
 
         updateChessPossibleMoves();
     })
-
 
 }
 function updateChessPossibleMoves(){
