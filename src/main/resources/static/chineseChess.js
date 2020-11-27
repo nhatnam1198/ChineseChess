@@ -141,9 +141,7 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
         let fromCol = data.fromCol;
         let destRow = data.destRow;
         let destCol = data.destCol;
-        if(data.gameEnd == true){
-            alert("GAME OVER");
-        }
+
         console.log(data);
 
         let fromPosition = alphabetPositionMapper[fromRow.toString() + fromCol.toString()];
@@ -151,6 +149,12 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
 
 
         board.move(fromPosition +"-" +destPosition);
+        if(data.gameEnd == true){
+            setTimeout(function (){
+                alert("GAME OVER");
+            }, 5000);
+        }
+
         updateChessPossibleMoves();
     })
 

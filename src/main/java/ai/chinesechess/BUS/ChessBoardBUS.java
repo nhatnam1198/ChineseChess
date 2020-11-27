@@ -46,6 +46,7 @@ public class ChessBoardBUS {
     private static final int ELEPHANT = 25; // tượng
     private static final int ADVISOR = 20; // sĩ
     private static final int HORSE = 40; // mã
+    private static final int SOLIDER_AFTER = 15;
     private static final double SOLDIER_BEFORE_CROSSING_RIVER_WHITE= 10.01;
     private static final double SOLDIER_BEFORE_CROSSING_RIVER_BLACK = 10.02;
     private static final double	SOLIDER_AFTER_CROSSING_RIVER_WHITE = 15.01;
@@ -72,27 +73,39 @@ public class ChessBoardBUS {
         // 0.23000000000333 to 0.23
         return (int) (Math.round((value - Math.floor(value)) * 100)) / 100.0;
     }
-    public int getChessValueBySymbol(char symbol){
+    public double getChessValueBySymbol(char symbol,int row, boolean isWhite){
+        double additionalValue = 0;
+        if(isWhite == true){
+            additionalValue = 0.01;
+        }else{
+            additionalValue = 0.02;
+        }
         if(symbol == 'R'){
-            return CHARIOT;
+            return CHARIOT + additionalValue;
         }
         if(symbol == 'N'){
-            return HORSE;
+            return HORSE + additionalValue;
         }
         if(symbol == 'B'){
-            return ELEPHANT;
+            return ELEPHANT + additionalValue;
         }
         if(symbol == 'A'){
-            return ADVISOR;
+            return ADVISOR + additionalValue;
         }
         if(symbol == 'K'){
-            return GENERAL;
+            return GENERAL + additionalValue;
         }
         if(symbol == 'C'){
-            return CANON;
+            return CANON + additionalValue;
         }
         if(symbol == 'P'){
-            return SOLDIER_BEFORE;
+            if(isWhite == true && row >= 5){
+                return SOLIDER_AFTER + additionalValue;
+            }
+            if(isWhite == false && row <= 4){
+                return SOLIDER_AFTER + additionalValue;
+            }
+            return SOLDIER_BEFORE + additionalValue;
         }
         return 0;
     }
@@ -166,6 +179,32 @@ public class ChessBoardBUS {
         }
         return false;
     }
+    private boolean faceToFace(int i, int j, double[][] chessBoard) {
+        if (i < BOARD_HEIGHT && i >= BOARD_HEIGHT - 3) {
+            i--;
+            while (i >= 0 && chessBoard[i][j] != GENERAL) {
+                if (chessBoard[i][j] != EMPTY) {
+                    return false;
+                }
+                i--;
+            }
+            if (i < 0) {
+                return false;
+            }
+        } else if (i <= 2 && i >= 0) {
+            i++;
+            while (i < BOARD_HEIGHT && chessBoard[i][j] != GENERAL) {
+                if (chessBoard[i][j] != EMPTY) {
+                    return false;
+                }
+                i++;
+            }
+            if (i == BOARD_HEIGHT) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public void generateMovement(double[][] chessBoard, Movement[] movement, int level, int[] numberOfBranch, boolean isWhite) {
         numberOfBranch[level] = 0;
@@ -190,7 +229,7 @@ public class ChessBoardBUS {
                                 case SOLDIER_BEFORE:
                                     genSoldierBeforeMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
                                     break;
-                                case SOLDIER_AFTER:
+                                case SOLIDER_AFTER:
                                     genSoldierAfterMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
                                     break;
                                 case ADVISOR:
@@ -220,7 +259,7 @@ public class ChessBoardBUS {
                                 case SOLDIER_BEFORE:
                                     genSoldierBeforeMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
                                     break;
-                                case SOLDIER_AFTER:
+                                case SOLIDER_AFTER:
                                     genSoldierAfterMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
                                     break;
                                 case ADVISOR:
@@ -799,13 +838,22 @@ public class ChessBoardBUS {
                 break;
             }
 
-            if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
+            if (chessBoard[chessRow][j] == EMPTY) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
                 movement[numberOfBranch[level]] = move;
                 numberOfBranch[level]++;
+            } else if (hasEnemy(chessBoard, chessRow, j, isWhite)) {
+                Movement move = new Movement();
+                move.setMovementName("CHARIOT");
+                move.setFrom(i, j);
+                move.setDest(chessRow, j);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+                chessRow = i;
+                break;
             } else {
                 chessRow = i;
                 break;
@@ -818,13 +866,22 @@ public class ChessBoardBUS {
                 chessRow = i;
                 break;
             }
-            if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
+            if (chessBoard[chessRow][j] == EMPTY) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
                 movement[numberOfBranch[level]] = move;
                 numberOfBranch[level]++;
+            } else if (hasEnemy(chessBoard, chessRow, j, isWhite)) {
+                Movement move = new Movement();
+                move.setMovementName("CHARIOT");
+                move.setFrom(i, j);
+                move.setDest(chessRow, j);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+                chessRow = i;
+                break;
             } else {
                 chessRow = i;
                 break;
@@ -837,13 +894,22 @@ public class ChessBoardBUS {
                 chessCol = j;
                 break;
             }
-            if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite)) {
+            if (chessBoard[i][chessCol] == EMPTY) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
                 movement[numberOfBranch[level]] = move;
                 numberOfBranch[level]++;
+            } else if (hasEnemy(chessBoard, i, chessCol, isWhite)) {
+                Movement move = new Movement();
+                move.setMovementName("CHARIOT");
+                move.setFrom(i, j);
+                move.setDest(i, chessCol);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+                chessCol = j;
+                break;
             } else {
                 chessCol = j;
                 break;
@@ -856,13 +922,22 @@ public class ChessBoardBUS {
                 chessCol = j;
                 break;
             }
-            if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite)) {
+            if (chessBoard[i][chessCol] == EMPTY) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
                 movement[numberOfBranch[level]] = move;
                 numberOfBranch[level]++;
+            } else if (hasEnemy(chessBoard, i, chessCol, isWhite)) {
+                Movement move = new Movement();
+                move.setMovementName("CHARIOT");
+                move.setFrom(i, j);
+                move.setDest(i, chessCol);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+                chessCol = j;
+                break;
             } else {
                 chessCol = j;
                 break;
@@ -871,8 +946,8 @@ public class ChessBoardBUS {
     }
 
 
-    private void genGeneralMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement, int level,
-                                    boolean isWhite) {
+    private void genGeneralMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
+                                    int level, boolean isWhite) {
         int chessRow = i;
         int chessCol = j;
         // To bottom
@@ -930,7 +1005,8 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessCol != j) {
-            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, chessCol, isWhite)
+                    && !faceToFace(chessRow, chessCol, chessBoard)
                     && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -952,7 +1028,8 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessCol != j) {
-            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, chessCol, isWhite)
+                    && !faceToFace(chessRow, chessCol, chessBoard)
                     && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -1178,16 +1255,21 @@ public class ChessBoardBUS {
                 int value;
                 if (enemyChessValue == 999999.02) {
                     value = 999999999 - level;
-                    finalMovement.setGameEnd(true);
+
                 } else {
                     value = minimax(depth - 1, chessBoard, level + 1, false, alpha, beta, !isWhite);
                 }
                 if (value > bestValue) {
                     bestValue = Math.max(bestValue, value);
                     if (level == 0) {
+
                         finalMovement.setFrom(fromRow, fromCol);
                         finalMovement.setDest(destRow, destCol);
-
+                        if(value == 999999999 - level){
+                            finalMovement.setGameEnd(true);
+                        }else{
+                            finalMovement.setGameEnd(false);
+                        }
                     }
                 }
 

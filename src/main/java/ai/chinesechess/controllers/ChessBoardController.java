@@ -21,9 +21,13 @@ public class ChessBoardController {
             String numericPositionString = numericMapper.get(key);
             double value = 0;
             if(position.get(key).charAt(0) == 'r'){
-                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1)) + 0.01;
+                int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
+                boolean isWhite = true;
+                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1),row ,isWhite);
             }else{
-                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1)) + 0.02;
+                int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
+                boolean isWhite = false;
+                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1), row, isWhite);
             }
             realChessBoard[Integer.parseInt(String.valueOf(numericPositionString.charAt(0)))][Integer.parseInt(String.valueOf(numericPositionString.charAt(1)))] = value;
         }
@@ -63,10 +67,15 @@ public class ChessBoardController {
             HashMap<String, String> numericMapper = getNumericMapper();
             String numericPositionString = numericMapper.get(key);
             double value = 0;
+            boolean isWhite = false;
             if(chessBoard.get(key).charAt(0) == 'r'){
-                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1)) + 0.01;
+                isWhite = true;
+                int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
+                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1),row ,isWhite);
             }else{
-                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1)) + 0.02;
+                isWhite = false;
+                int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
+                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1),row ,isWhite);
             }
             realChessBoard[Integer.parseInt(String.valueOf(numericPositionString.charAt(0)))][Integer.parseInt(String.valueOf(numericPositionString.charAt(1)))] = value;
         }
