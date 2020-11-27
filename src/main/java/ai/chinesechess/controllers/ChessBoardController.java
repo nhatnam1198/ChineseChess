@@ -27,8 +27,7 @@ public class ChessBoardController {
             }
             realChessBoard[Integer.parseInt(String.valueOf(numericPositionString.charAt(0)))][Integer.parseInt(String.valueOf(numericPositionString.charAt(1)))] = value;
         }
-
-        chessBoardBUS.minimax(5, realChessBoard, 0, true, -Integer.MAX_VALUE, Integer.MAX_VALUE, true);
+        chessBoardBUS.minimax(4, realChessBoard, 0, true, -Integer.MAX_VALUE, Integer.MAX_VALUE, true);
         System.out.println("============================================================================= mmax");
         Movement finalMovement = chessBoardBUS.getFinalMovement();
 //        int finalFromRow = chessBoardBUS.getFinalMovement().getFromRow();
@@ -56,8 +55,7 @@ public class ChessBoardController {
     @PostMapping("/legalMovements")
     public Movement[] GetLegalMovement(@RequestBody LegalMovementDTO legalMovementDTO){
         HashMap<String, String> chessBoard = legalMovementDTO.getChessBoard();
-//        String chessName = legalMovementDTO.getChessName();
-//        String chessPosition = legalMovementDTO.getChessPosition();
+
         double[][] realChessBoard = new double[10][9];
         ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
         for(String key : chessBoard.keySet()){

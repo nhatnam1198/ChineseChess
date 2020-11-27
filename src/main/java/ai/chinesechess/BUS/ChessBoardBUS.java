@@ -109,7 +109,7 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfGeneral(int i, int j, boolean isWhite) {
+    private boolean checkPositionOfGeneral(double[][] chessBoard, int i, int j, boolean isWhite) {
         if (!isWhite) {
             if (i < BOARD_HEIGHT && i >= BOARD_HEIGHT - 3 && j >= BOARD_WIDTH / 2 - 1 && j <= BOARD_WIDTH / 2 + 1) {
                 return true;
@@ -122,7 +122,7 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfAdvisor(int i, int j, boolean isWhite) {
+    private boolean checkPositionOfAdvisor(double[][] chessBoard, int i, int j, boolean isWhite) {
         if (!isWhite) {
             if ((i == 9 && (j == 3 || j == 5)) || (i == 8 && j == 4) || (i == 7 && (j == 3 || j == 5))) {
                 return true;
@@ -135,7 +135,7 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfElephant(int i, int j, boolean isWhite) {
+    private boolean checkPositionOfElephant(double[][] chessBoard, int i, int j, boolean isWhite) {
         if (!isWhite) {
             if ((i == 9 && (j == 2 || j == 6)) || (i == 7 && (j == 4 || j == 0 || j == 8))
                     || (i == 5 && (j == 2 || j == 6))) {
@@ -150,7 +150,7 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfHorse(int fromRow, int fromCol, int destRow, int destCol) {
+    private boolean checkPositionOfHorse(double[][] chessBoard, int fromRow, int fromCol, int destRow, int destCol) {
         if ((destRow == fromRow + 1 || destRow == fromRow - 1) && destCol == fromCol + 2
                 && chessBoard[fromRow][fromCol + 1] == EMPTY) {
             return true;
@@ -388,7 +388,7 @@ public class ChessBoardBUS {
         chessRow++;
         chessCol -= 2;
         if (chessRow < BOARD_HEIGHT && chessCol >= 0) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -410,7 +410,7 @@ public class ChessBoardBUS {
         chessRow += 2;
         chessCol--;
         if (chessRow < BOARD_HEIGHT && chessCol >= 0) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -433,7 +433,7 @@ public class ChessBoardBUS {
         chessRow++;
         chessCol += 2;
         if (chessRow < BOARD_HEIGHT && chessCol < BOARD_WIDTH) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard,i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -455,7 +455,7 @@ public class ChessBoardBUS {
         chessRow += 2;
         chessCol++;
         if (chessRow < BOARD_HEIGHT && chessCol < BOARD_WIDTH) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard,i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -478,7 +478,7 @@ public class ChessBoardBUS {
         chessRow--;
         chessCol -= 2;
         if (chessRow >= 0 && chessCol >= 0) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard,i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -500,7 +500,7 @@ public class ChessBoardBUS {
         chessRow -= 2;
         chessCol--;
         if (chessRow >= 0 && chessCol >= 0) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard,i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -523,7 +523,7 @@ public class ChessBoardBUS {
         chessRow--;
         chessCol += 2;
         if (chessRow >= 0 && chessCol < BOARD_WIDTH) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard,i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -545,7 +545,7 @@ public class ChessBoardBUS {
         chessRow -= 2;
         chessCol++;
         if (chessRow >= 0 && chessCol < BOARD_WIDTH) {
-            if (checkPositionOfHorse(i, j, chessRow, chessCol)
+            if (checkPositionOfHorse(chessBoard,i, j, chessRow, chessCol)
                     && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
@@ -577,7 +577,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessRow, chessCol, isWhite) && chessBoard[i + 1][j - 1] == EMPTY
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i + 1][j - 1] == EMPTY
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
@@ -604,7 +604,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessRow, chessCol, isWhite) && chessBoard[i + 1][j + 1] == EMPTY
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i + 1][j + 1] == EMPTY
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
@@ -631,7 +631,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessRow, chessCol, isWhite) && chessBoard[i - 1][j - 1] == EMPTY
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i - 1][j - 1] == EMPTY
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
@@ -658,7 +658,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessRow, chessCol, isWhite) && chessBoard[i - 1][j + 1] == EMPTY
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i - 1][j + 1] == EMPTY
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
@@ -689,7 +689,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessRow, chessCol, isWhite)
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
@@ -716,7 +716,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessRow, chessCol, isWhite)
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
@@ -743,7 +743,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessRow, chessCol, isWhite)
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
@@ -770,7 +770,7 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessRow, chessCol, isWhite)
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
                         && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
@@ -883,7 +883,7 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessRow != i) {
-            if (checkPositionOfGeneral(chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
                     && (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -907,7 +907,7 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessRow != i) {
-            if (checkPositionOfGeneral(chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
                     && (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -930,7 +930,7 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessCol != j) {
-            if (checkPositionOfGeneral(chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
                     && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -952,7 +952,7 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessCol != j) {
-            if (checkPositionOfGeneral(chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
                     && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -1176,9 +1176,9 @@ public class ChessBoardBUS {
                     chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_WHITE;
                 }
                 int value;
-                if (chessBoard[destRow][destCol] == 999999.02) {
-                    IS_GAME_END = true;
-                    value = 1000 - level;
+                if (enemyChessValue == 999999.02) {
+                    value = 999999999 - level;
+                    finalMovement.setGameEnd(true);
                 } else {
                     value = minimax(depth - 1, chessBoard, level + 1, false, alpha, beta, !isWhite);
                 }
@@ -1187,6 +1187,7 @@ public class ChessBoardBUS {
                     if (level == 0) {
                         finalMovement.setFrom(fromRow, fromCol);
                         finalMovement.setDest(destRow, destCol);
+
                     }
                 }
 
