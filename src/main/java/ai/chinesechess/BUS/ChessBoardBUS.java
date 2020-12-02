@@ -39,10 +39,10 @@ public class ChessBoardBUS {
     //    private double[][] chessBoard = new double[BOARD_HEIGHT][BOARD_WIDTH];
     public boolean IS_GAME_END = false;
     private static final int CHARIOT = 90; // xe
-    private static final int CANON = 50; // pháo
-    private static final int GENERAL = 999999; // tướng
+    private static final int CANON = 40; // pháo
+    private static final int GENERAL = 120; // tướng
     private static final int SOLDIER_BEFORE = 10; // tốt trước khi sang sông
-    private static final int SOLDIER_AFTER = 15; // tốt sau khi sang sông
+
     private static final int ELEPHANT = 25; // tượng
     private static final int ADVISOR = 20; // sĩ
     private static final int HORSE = 30; // mã
@@ -283,161 +283,174 @@ public class ChessBoardBUS {
         }
     }
 
-    private void genCanonMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement, int level, boolean isWhite) {
+    private void genCanonMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
+                                  int level, boolean isWhite) {
         int chessRow = i;
         int chessCol = j;
-        boolean checkCanon = true;
+//        boolean checkCanon = true;
         // To bottom
         // tìm ngòi
+        while (chessRow < BOARD_HEIGHT) {
+            chessRow++;
+            if (chessRow == BOARD_HEIGHT) {
+                chessRow = i;
+                break;
+            }
+            if (chessBoard[chessRow][j] == EMPTY) {
+                Movement move = new Movement();
+                move.setFrom(i, j);
+                move.setDest(chessRow, j);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+            } else {
+                chessRow = i;
+                break;
+            }
+        }
         for (int k = i + 1; k < BOARD_HEIGHT - 1; k++) {
             if (chessBoard[k][j] != EMPTY) {
                 for (int k2 = k + 1; k2 < BOARD_HEIGHT; k2++) {
-                    if (hasEnemy(chessBoard, k2, j, isWhite)) {
-                        Movement move = new Movement();
-                        move.setFrom(i, j);
-                        move.setDest(k2, j);
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
-                        checkCanon = false;
+                    if (chessBoard[k2][j] != EMPTY) {
+                        if (hasEnemy(chessBoard, k2, j, isWhite)) {
+                            Movement move = new Movement();
+                            move.setFrom(i, j);
+                            move.setDest(k2, j);
+                            movement[numberOfBranch[level]] = move;
+                            numberOfBranch[level]++;
+                        }
+//                        checkCanon = false;
                         break;
                     }
                 }
                 break;
             }
         }
-        if (checkCanon) {
-            while (chessRow < BOARD_HEIGHT) {
-                chessRow++;
-                if (chessRow == BOARD_HEIGHT) {
-                    chessRow = i;
-                    break;
-                }
-                if (chessBoard[chessRow][j] == EMPTY) {
-                    Movement move = new Movement();
-                    move.setFrom(i, j);
-                    move.setDest(chessRow, j);
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
-                } else {
-                    chessRow = i;
-                    break;
-                }
-            }
-        }
-        checkCanon = true;
+//        if (checkCanon) {
+
+//        }
+//        checkCanon = true;
         // To top
         // tìm ngòi
+        while (chessRow >= 0) {
+            chessRow--;
+            if (chessRow < 0) {
+                chessRow = i;
+                break;
+            }
+            if (chessBoard[chessRow][j] == EMPTY) {
+                Movement move = new Movement();
+                move.setFrom(i, j);
+                move.setDest(chessRow, j);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+            } else {
+                chessRow = i;
+                break;
+            }
+        }
         for (int k = i - 1; k > 0; k--) {
             if (chessBoard[k][j] != EMPTY) {
                 for (int k2 = k - 1; k2 >= 0; k2--) {
-                    if (hasEnemy(chessBoard, k2, j, isWhite)) {
-                        Movement move = new Movement();
-                        move.setFrom(i, j);
-                        move.setDest(k2, j);
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
-                        checkCanon = false;
+                    if (chessBoard[k2][j] != EMPTY) {
+                        if (hasEnemy(chessBoard, k2, j, isWhite)) {
+                            Movement move = new Movement();
+                            move.setFrom(i, j);
+                            move.setDest(k2, j);
+                            movement[numberOfBranch[level]] = move;
+                            numberOfBranch[level]++;
+                        }
+//                        checkCanon = false;
                         break;
                     }
                 }
                 break;
             }
         }
-        if (checkCanon) {
-            while (chessRow >= 0) {
-                chessRow--;
-                if (chessRow < 0) {
-                    chessRow = i;
-                    break;
-                }
-                if (chessBoard[chessRow][j] == EMPTY) {
-                    Movement move = new Movement();
-                    move.setFrom(i, j);
-                    move.setDest(chessRow, j);
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
-                } else {
-                    chessRow = i;
-                    break;
-                }
-            }
-        }
+//        if (checkCanon) {
+
+//        }
         // To right
         // tìm ngòi
-        checkCanon = true;
+        while (chessCol < BOARD_WIDTH) {
+            chessCol++;
+            if (chessCol == BOARD_WIDTH) {
+                chessCol = j;
+                break;
+            }
+            if (chessBoard[i][chessCol] == EMPTY) {
+                Movement move = new Movement();
+                move.setFrom(i, j);
+                move.setDest(i, chessCol);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+            } else {
+                chessCol = j;
+                break;
+            }
+        }
+//        checkCanon = true;
         for (int k = j + 1; k < BOARD_WIDTH - 1; k++) {
             if (chessBoard[i][k] != EMPTY) {
                 for (int k2 = k + 1; k2 < BOARD_WIDTH; k2++) {
-                    if (hasEnemy(chessBoard, i, k2, isWhite)) {
-                        Movement move = new Movement();
-                        move.setFrom(i, j);
-                        move.setDest(i, k2);
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
-                        checkCanon = false;
+                    if (chessBoard[i][k2] != EMPTY) {
+                        if (hasEnemy(chessBoard, i, k2, isWhite)) {
+                            Movement move = new Movement();
+                            move.setFrom(i, j);
+                            move.setDest(i, k2);
+                            movement[numberOfBranch[level]] = move;
+                            numberOfBranch[level]++;
+                        }
+//                        checkCanon = false;
                         break;
                     }
                 }
                 break;
             }
         }
-        if (checkCanon) {
-            while (chessCol < BOARD_WIDTH) {
-                chessCol++;
-                if (chessCol == BOARD_WIDTH) {
-                    chessCol = j;
-                    break;
-                }
-                if (chessBoard[i][chessCol] == EMPTY) {
-                    Movement move = new Movement();
-                    move.setFrom(i, j);
-                    move.setDest(i, chessCol);
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
-                } else {
-                    chessCol = j;
-                    break;
-                }
-            }
-        }
+//        if (checkCanon) {
+
+//        }
         // To left
         // tìm ngòi
-        checkCanon = true;
+        while (chessCol >= 0) {
+            chessCol--;
+            if (chessCol < 0) {
+                chessCol = j;
+                break;
+            }
+            if (chessBoard[i][chessCol] == EMPTY) {
+                Movement move = new Movement();
+                move.setFrom(i, j);
+                move.setDest(i, chessCol);
+                movement[numberOfBranch[level]] = move;
+                numberOfBranch[level]++;
+            } else {
+                chessCol = j;
+                break;
+            }
+        }
+//        checkCanon = true;
         for (int k = j - 1; k > 0; k--) {
             if (chessBoard[i][k] != EMPTY) {
                 for (int k2 = k - 1; k2 >= 0; k2--) {
-                    if (hasEnemy(chessBoard, i, k2, isWhite)) {
-                        Movement move = new Movement();
-                        move.setFrom(i, j);
-                        move.setDest(i, k2);
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
-                        checkCanon = false;
+                    if (chessBoard[i][k2] != EMPTY) {
+                        if (hasEnemy(chessBoard, i, k2, isWhite)) {
+                            Movement move = new Movement();
+                            move.setFrom(i, j);
+                            move.setDest(i, k2);
+                            movement[numberOfBranch[level]] = move;
+                            numberOfBranch[level]++;
+                        }
+//                        checkCanon = false;
                         break;
                     }
                 }
                 break;
             }
         }
-        if (checkCanon) {
-            while (chessCol >= 0) {
-                chessCol--;
-                if (chessCol < 0) {
-                    chessCol = j;
-                    break;
-                }
-                if (chessBoard[i][chessCol] == EMPTY) {
-                    Movement move = new Movement();
-                    move.setFrom(i, j);
-                    move.setDest(i, chessCol);
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
-                } else {
-                    chessCol = j;
-                    break;
-                }
-            }
-        }
+//        if (checkCanon) {
+
+//        }
     }
 
     private void genHorseMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement, int level, boolean isWhite) {
@@ -1272,10 +1285,9 @@ public class ChessBoardBUS {
                 if (movement[k].isSoliderMovement()) {
                     chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_WHITE;
                 }
-                int value;
-                if (enemyChessValue == 999999.02) {
+                int value = 0;
+                if (enemyChessValue == 120.02) {
                     value = 999999999 - level;
-
                 } else {
                     value = minimax(depth - 1, chessBoard, level + 1, false, alpha, beta, !isWhite);
                 }
@@ -1323,8 +1335,12 @@ public class ChessBoardBUS {
                 if (movement[k].isSoliderMovement()) {
                     chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_BLACK;
                 }
-                int value = minimax(depth - 1, chessBoard, level + 1, true, alpha, beta, !isWhite);
-
+                int value = 0;
+                if (enemyChessValue == 120.01) {
+                    value = -999999999 - level;
+                }else{
+                    value = minimax(depth - 1, chessBoard, level + 1, true, alpha, beta, !isWhite);
+                }
                 if (value < worstValue) {
                     worstValue = Math.min(value, worstValue);
                 }
