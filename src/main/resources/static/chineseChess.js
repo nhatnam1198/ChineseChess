@@ -1,6 +1,15 @@
 $(document).ready(function () {
     init();
     $('.loader').hide();
+    $('#chieuTuong').hide();
+});
+$('#btnReload').on('click', function () {
+    var flag = confirm('Bạn có muốn chơi lại không');
+    if (flag === true) {
+        $('#chieuTuong').hide();
+        $('.loader').hide();
+        init();
+    }
 });
 
 let board;
@@ -115,7 +124,10 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
         return 'snapback';
     }
     if(board.position()[target] == 'rK'){
-        alert("GAME OVER YOU WIN");
+        const r = confirm("GAME OVER YOU WIN");
+        if (r === true){
+            init();
+        }
         return;
     }
     var isFetching = true;
@@ -204,11 +216,11 @@ function checkmate() {
     $.ajax(settings).done(function (data) {
 
         if (data.gameEnd == true) {
-            setTimeout(function () {
-                alert("CHIẾU TƯỚNG");
-            }, 500);
+            $('#chieuTuong').show();
         }
-
+        else {
+            $('#chieuTuong').hide();
+        }
     })
 }
 

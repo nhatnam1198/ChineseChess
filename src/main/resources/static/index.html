@@ -28,6 +28,23 @@
 
     <title>Document</title>
     <style>
+        h1 {
+            font: bold 4.5em/1.5 Bebas, sans-serif;
+            color: #5CA17C; /*non-webkit fallback*/
+            font-size: 72px;
+            text-transform: uppercase;
+            background-image: linear-gradient(to bottom, #26BDA6, #FF9F65, #DED37E, #26BDA6);
+            background-size: auto 250%;
+            transition: background-position 0.5s;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 150px;
+            background-position: 0 100%;
+        }
+        h1:hover {
+            background-position: 0 0;
+            cursor: pointer;
+        }
         .loader {
             border: 5px solid #f3f3f3;
             border-radius: 50%;
@@ -76,10 +93,18 @@
         <h1 style="text-align: center">Cờ tướng</h1>
         <br>
     </div>
+    <div id="chieuTuong" style="display: flex;justify-content: center" class="col-md-12 alert alert-danger" role="alert">
+        Chiếu tướng
+    </div>
     <div id="myBoard" style="width: 600px;position: relative"></div>
-    <div style="position: absolute;top: 60%" class="loader"></div>
+    <div style="position: absolute;top: 55%" class="loader"></div>
 </div>
 
+<div class="row" style="margin-top: 10px">
+    <div class="col-md-12" style="display: flex;justify-content: center">
+        <button type="button" id="btnReload" class="btn btn-success">Chơi lại</button>
+    </div>
+</div>
 
 </body>
 <script type="text/javascript" src="./chineseChess.js"></script>
