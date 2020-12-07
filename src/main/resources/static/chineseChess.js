@@ -127,6 +127,8 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
         const r = confirm("GAME OVER YOU WIN");
         if (r === true){
             init();
+            $('.loader').hide();
+            $('#chieuTuong').hide();
         }
         return;
     }
