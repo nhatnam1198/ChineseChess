@@ -1,9 +1,9 @@
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="./css/xiangqiboard-0.3.3.css" />
-    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/xiangqiboard-0.3.3.css"/>
+    <link rel="stylesheet" href="./css/style.css"/>
     <link
             rel="stylesheet"
             href="./style/font-awesome-4.7.0/css/font-awesome.min.css"
@@ -41,17 +41,29 @@
         }
 
         @-webkit-keyframes spin {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
-<body>
+<body style="background-image: url('https://i.imgur.com/NjrEczP.jpg');
+   height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;">
 <!-- <div class="row mt-2">
   <div class="col" style="width: 507px;height: 567px;" id="content">
     <canvas id="myCanvas">
@@ -61,7 +73,8 @@
 
 <div class="row" style="justify-content: center;display: flex">
     <div class="col-md-12">
-        <h1 style="text-align: center">Chinese Chess</h1>
+        <h1 style="text-align: center">Cờ tướng</h1>
+        <br>
     </div>
     <div id="myBoard" style="width: 600px;position: relative"></div>
     <div style="position: absolute;top: 60%" class="loader"></div>

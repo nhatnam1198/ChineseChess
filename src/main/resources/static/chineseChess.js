@@ -165,6 +165,8 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
         }
 
         updateChessPossibleMoves();
+
+        checkmate();
     })
 
 }
@@ -187,6 +189,29 @@ function updateChessPossibleMoves(){
         console.log(possibleMoves);
     })
 }
+
+function checkmate() {
+    var settings = {
+        "url": "http://localhost:6030/checkmate?position=",
+        "method": "POST",
+        "async": "false",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "data": JSON.stringify(board.position()),
+    };
+
+    $.ajax(settings).done(function (data) {
+
+        if (data.gameEnd == true) {
+            setTimeout(function () {
+                alert("CHIẾU TƯỚNG");
+            }, 500);
+        }
+
+    })
+}
+
 function init() {
     // const board = Xiangqiboard('myBoard', 'start');
     alphabetPositionMapper = initAlphabetPositionMapper();

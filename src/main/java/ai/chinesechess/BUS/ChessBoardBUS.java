@@ -42,7 +42,6 @@ public class ChessBoardBUS {
     private static final int CANON = 40; // pháo
     private static final int GENERAL = 120; // tướng
     private static final int SOLDIER_BEFORE = 10; // tốt trước khi sang sông
-
     private static final int ELEPHANT = 25; // tượng
     private static final int ADVISOR = 20; // sĩ
     private static final int HORSE = 30; // mã
@@ -1151,7 +1150,6 @@ public class ChessBoardBUS {
             chessRow++;
             if (chessRow == BOARD_HEIGHT) {
                 chessRow = i;
-//				break;
             }
             if (chessRow != i) {
                 if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
@@ -1163,7 +1161,6 @@ public class ChessBoardBUS {
                     numberOfBranch[level]++;
                 } else {
                     chessRow = i;
-//				break;
                 }
             }
         }
@@ -1336,9 +1333,10 @@ public class ChessBoardBUS {
                     chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_BLACK;
                 }
                 int value = 0;
+                //Cắt nhánh
                 if (enemyChessValue == 120.01) {
                     value = -999999999 - level;
-                }else{
+                } else {
                     value = minimax(depth - 1, chessBoard, level + 1, true, alpha, beta, !isWhite);
                 }
                 if (value < worstValue) {
@@ -1358,6 +1356,67 @@ public class ChessBoardBUS {
             }
             return worstValue;
         }
+    }
+
+    public Movement checkmate(int depth, double[][] temp, int level, boolean isMaximizingPlayer, int alpha, int beta,
+                              boolean isWhite) {
+        double[][] chessBoard = new double[BOARD_HEIGHT][BOARD_WIDTH];
+        for (int i = 0; i < chessBoard.length; i++) {
+            for (int j = 0; j < chessBoard[i].length; j++) {
+                chessBoard[i][j] = temp[i][j];
+            }
+        }
+        int[] numberOfBranch = new int[50];
+        Movement[] movement = new Movement[200];
+        Movement movementCheckmate = new Movement();
+        generateMovement(chessBoard, movement, level, numberOfBranch, isWhite);
+        int bestValue = -Integer.MAX_VALUE;
+        for (int k = 0; k < numberOfBranch[level]; k++) {
+            // try
+            double enemyChessValue = 0;
+            int fromRow = movement[k].getFromRow();
+            int fromCol = movement[k].getFromCol();
+            int destRow = movement[k].getDestRow();
+            int destCol = movement[k].getDestCol();
+            if (hasEnemy(chessBoard, destRow, destCol, isWhite)) {
+                enemyChessValue = chessBoard[destRow][destCol];
+            }
+            chessBoard[destRow][destCol] = chessBoard[fromRow][fromCol];
+            chessBoard[fromRow][fromCol] = EMPTY;
+            if (movement[k].isSoliderMovement()) {
+                chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_WHITE;
+            }
+            int value = 0;
+            if (enemyChessValue == 120.02) {
+                value = 999999999 - level;
+            }
+            if (value > bestValue) {
+                bestValue = Math.max(bestValue, value);
+                if (level == 0) {
+                    movementCheckmate.setFrom(fromRow, fromCol);
+                    movementCheckmate.setDest(destRow, destCol);
+                    if (value == 999999999 - level) {
+                        movementCheckmate.setGameEnd(true);
+                    } else {
+                        movementCheckmate.setGameEnd(false);
+                    }
+                }
+            }
+
+            alpha = Math.max(alpha, bestValue);
+
+            // backtrack
+            chessBoard[fromRow][fromCol] = chessBoard[destRow][destCol];
+            chessBoard[destRow][destCol] = enemyChessValue;
+            if (movement[k].isSoliderMovement()) {
+                chessBoard[destRow][destCol] = SOLDIER_BEFORE_CROSSING_RIVER_WHITE;
+            }
+            if (beta <= alpha) {
+                break;
+            }
+        }
+        return movementCheckmate;
+
     }
 
     public void initChessBoard() {
@@ -1472,7 +1531,6 @@ public class ChessBoardBUS {
         chess[2][1] = CANON_WHITE;
         chess[2][7] = CANON_WHITE;
         chess[7][1] = CANON_BLACK;
-
         chess[7][7] = CANON_BLACK;
     }
 }

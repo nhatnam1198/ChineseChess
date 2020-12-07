@@ -12,19 +12,20 @@ import java.util.Map;
 @RestController
 public class ChessBoardController {
     private final int EMPTY = 0;
+
     @PostMapping("/movement")
-    public Movement GetMovement(@RequestBody HashMap<String, String> position){
+    public Movement GetMovement(@RequestBody HashMap<String, String> position) {
         double[][] realChessBoard = new double[10][9];
         ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
-        for(String key : position.keySet()){
+        for (String key : position.keySet()) {
             HashMap<String, String> numericMapper = getNumericMapper();
             String numericPositionString = numericMapper.get(key);
             double value = 0;
-            if(position.get(key).charAt(0) == 'r'){
+            if (position.get(key).charAt(0) == 'r') {
                 int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
                 boolean isWhite = true;
-                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1),row ,isWhite);
-            }else{
+                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1), row, isWhite);
+            } else {
                 int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
                 boolean isWhite = false;
                 value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1), row, isWhite);
@@ -45,11 +46,39 @@ public class ChessBoardController {
         return finalMovement;
     }
 
-    private HashMap<String, String> getNumericMapper(){
+    @PostMapping("/checkmate")
+    public Movement checkmate(@RequestBody HashMap<String, String> position) {
+        double[][] realChessBoard = new double[10][9];
+        ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
+        for (String key : position.keySet()) {
+            HashMap<String, String> numericMapper = getNumericMapper();
+            String numericPositionString = numericMapper.get(key);
+            double value = 0;
+            if (position.get(key).charAt(0) == 'r') {
+                int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
+                boolean isWhite = true;
+                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1), row, isWhite);
+            } else {
+                int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
+                boolean isWhite = false;
+                value = chessBoardBUS.getChessValueBySymbol(position.get(key).charAt(1), row, isWhite);
+            }
+            realChessBoard[Integer.parseInt(String.valueOf(numericPositionString.charAt(0)))][Integer
+                    .parseInt(String.valueOf(numericPositionString.charAt(1)))] = value;
+        }
+        Movement finalMovement = chessBoardBUS.checkmate(1, realChessBoard, 0, true, -Integer.MAX_VALUE,
+                Integer.MAX_VALUE, true);
+
+//		System.out.println("============================================================================= mmax");
+
+        return finalMovement;
+    }
+
+    private HashMap<String, String> getNumericMapper() {
         HashMap<String, String> mapper = new HashMap<String, String>();
-        for(int i = 0; i < 10; i++){
-            for(int j = 0; j < 9; j++){
-                mapper.put((char)((j+105) - (2 * j)) + Integer.toString(i), Integer.toString(i) + Integer.toString(j));
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 9; j++) {
+                mapper.put((char) ((j + 105) - (2 * j)) + Integer.toString(i), Integer.toString(i) + Integer.toString(j));
             }
         }
         return mapper;
@@ -57,24 +86,24 @@ public class ChessBoardController {
     }
 
     @PostMapping("/legalMovements")
-    public Movement[] GetLegalMovement(@RequestBody LegalMovementDTO legalMovementDTO){
+    public Movement[] GetLegalMovement(@RequestBody LegalMovementDTO legalMovementDTO) {
         HashMap<String, String> chessBoard = legalMovementDTO.getChessBoard();
 
         double[][] realChessBoard = new double[10][9];
         ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
-        for(String key : chessBoard.keySet()){
+        for (String key : chessBoard.keySet()) {
             HashMap<String, String> numericMapper = getNumericMapper();
             String numericPositionString = numericMapper.get(key);
             double value = 0;
             boolean isWhite = false;
-            if(chessBoard.get(key).charAt(0) == 'r'){
+            if (chessBoard.get(key).charAt(0) == 'r') {
                 isWhite = true;
                 int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
-                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1),row ,isWhite);
-            }else{
+                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1), row, isWhite);
+            } else {
                 isWhite = false;
                 int row = Integer.parseInt(String.valueOf(numericPositionString.charAt(0)));
-                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1),row ,isWhite);
+                value = chessBoardBUS.getChessValueBySymbol(chessBoard.get(key).charAt(1), row, isWhite);
             }
             realChessBoard[Integer.parseInt(String.valueOf(numericPositionString.charAt(0)))][Integer.parseInt(String.valueOf(numericPositionString.charAt(1)))] = value;
         }
