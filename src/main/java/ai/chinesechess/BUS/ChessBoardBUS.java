@@ -185,7 +185,7 @@ public class ChessBoardBUS {
     private boolean faceToFace(int i, int j, double[][] chessBoard) {
         if (i < BOARD_HEIGHT && i >= BOARD_HEIGHT - 3) {
             i--;
-            while (i >= 0 && chessBoard[i][j] != GENERAL) {
+            while (i >= 0 && (int) Math.floor(chessBoard[i][j]) != GENERAL) {
                 if (chessBoard[i][j] != EMPTY) {
                     return false;
                 }
@@ -196,7 +196,7 @@ public class ChessBoardBUS {
             }
         } else if (i <= 2 && i >= 0) {
             i++;
-            while (i < BOARD_HEIGHT && chessBoard[i][j] != GENERAL) {
+            while (i < BOARD_HEIGHT && (int) Math.floor(chessBoard[i][j]) != GENERAL) {
                 if (chessBoard[i][j] != EMPTY) {
                     return false;
                 }
@@ -991,6 +991,7 @@ public class ChessBoardBUS {
         }
         if (chessRow != i) {
             if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
+                    && !faceToFace(chessRow, chessCol, chessBoard)
                     && (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
@@ -1015,6 +1016,7 @@ public class ChessBoardBUS {
         }
         if (chessRow != i) {
             if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
+                    && !faceToFace(chessRow, chessCol, chessBoard)
                     && (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
