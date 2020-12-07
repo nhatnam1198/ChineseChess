@@ -173,9 +173,9 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
 
         board.move(fromPosition +"-" +destPosition);
         if(data.gameEnd == true){
-            setTimeout(function (){
-                alert("GAME OVER");
-            }, 5000);
+           init();
+            $('#chieuTuong').hide();
+            $('.loader').hide();
         }
 
         updateChessPossibleMoves();
