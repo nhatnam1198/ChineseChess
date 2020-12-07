@@ -7,16 +7,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 public class ChessBoardController {
     private final int EMPTY = 0;
+    private List<Movement> movementList = new ArrayList<>();
+
 
     @PostMapping("/movement")
     public Movement GetMovement(@RequestBody HashMap<String, String> position) {
         double[][] realChessBoard = new double[10][9];
-        ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
+        ChessBoardBUS chessBoardBUS = new ChessBoardBUS(movementList);
         for (String key : position.keySet()) {
             HashMap<String, String> numericMapper = getNumericMapper();
             String numericPositionString = numericMapper.get(key);
@@ -42,14 +45,17 @@ public class ChessBoardController {
 //        System.out.println("(" + finalFromRow + ", " + finalFromCol + ") ==>" + "(" + finalDestRow +", " + finalDestCol+")");
 //        realChessBoard[finalDestRow][finalDestCol] = realChessBoard[finalFromRow][finalFromCol];
 //        realChessBoard[finalFromRow][finalFromCol] = EMPTY;
-
+        if (movementList.size() == 4) {
+            movementList.remove(0);
+        }
+        movementList.add(finalMovement);
         return finalMovement;
     }
 
     @PostMapping("/checkmate")
     public Movement checkmate(@RequestBody HashMap<String, String> position) {
         double[][] realChessBoard = new double[10][9];
-        ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
+        ChessBoardBUS chessBoardBUS = new ChessBoardBUS(movementList);
         for (String key : position.keySet()) {
             HashMap<String, String> numericMapper = getNumericMapper();
             String numericPositionString = numericMapper.get(key);
@@ -90,7 +96,7 @@ public class ChessBoardController {
         HashMap<String, String> chessBoard = legalMovementDTO.getChessBoard();
 
         double[][] realChessBoard = new double[10][9];
-        ChessBoardBUS chessBoardBUS = new ChessBoardBUS();
+        ChessBoardBUS chessBoardBUS = new ChessBoardBUS(movementList);
         for (String key : chessBoard.keySet()) {
             HashMap<String, String> numericMapper = getNumericMapper();
             String numericPositionString = numericMapper.get(key);
