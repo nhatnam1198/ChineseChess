@@ -92,7 +92,7 @@ public class ChessBoardController {
     }
 
     @PostMapping("/legalMovements")
-    public Movement[] GetLegalMovement(@RequestBody LegalMovementDTO legalMovementDTO) {
+    public Movement[] GetLegalMovements(@RequestBody LegalMovementDTO legalMovementDTO) {
         HashMap<String, String> chessBoard = legalMovementDTO.getChessBoard();
 
         double[][] realChessBoard = new double[10][9];

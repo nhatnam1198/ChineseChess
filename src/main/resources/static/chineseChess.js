@@ -49,38 +49,7 @@ function onMouseoverSquare (square, piece) {
                 greySquare(possiblePosition);
             }
         }
-        // var settings = {
-        //     "url": "http://localhost:6030/legalMovements",
-        //     "method": "POST",
-        //     "headers": {
-        //         "Content-Type": "application/json"
-        //     },
-        //     "data": JSON.stringify({
-        //         chessPosition: board.position(),
-        //         chessName: piece,
-        //         chessPosition: numericPositionMapper[square]
-        //     })
-        // };
 
-        // $.ajax(settings).done(function(data){
-        //     if(data!= null)
-        //
-        //     for (let i = 0; i < data.length; i++) {
-        //         let fromRow = data[i].fromRow;
-        //         let fromCol = data[i].fromCol;
-        //         let destRow = data[i].destRow;
-        //         let destCol = data[i].destCol;
-        //         console.log(data[i]);
-        //         console.log(alphabetPositionMapper[fromRow.toString() + fromCol.toString()])
-        //         console.log(square);
-        //         if(alphabetPositionMapper[fromRow.toString() + fromCol.toString()] != square){
-        //             return;
-        //         }
-        //         let possiblePosition = alphabetPositionMapper[destRow.toString() + destCol.toString()];
-        //         console.log(possiblePosition)
-        //         greySquare(possiblePosition);
-        //     }
-        // })
     }else{
         return;
     }
@@ -134,6 +103,7 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
     }
     var isFetching = true;
     console.log(isFetching);
+    $('.loader').hide();
     $('.loader').show();
     removeGreySquares();
 

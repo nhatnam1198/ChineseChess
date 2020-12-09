@@ -7,6 +7,8 @@ import ai.chinesechess.models.Movement;
 public class ChessBoardBUS {
     private final int BOARD_HEIGHT = 10;
     private final int BOARD_WIDTH = 9;
+    private final double GENERAL_RED = 120.01;
+    private final double GENERAL_BLACK = 120.02;
     private int EMPTY = 0;
     private List<Movement> listMovement;
 
@@ -64,16 +66,16 @@ public class ChessBoardBUS {
     private int DARK = 1;
     private int WHITE = 0;
 
-    private void tryMakeMove(double[][] chessBoard, Movement movement) {
-        int fromRow = movement.getFromRow();
-        int fromCol = movement.getFromCol();
-        int destRow = movement.getDestRow();
-        int destCol = movement.getDestCol();
+    private void tryMakeMove(double[][] chessBoard, Movement possibleMovement) {
+        int fromRow = possibleMovement.getFromRow();
+        int fromCol = possibleMovement.getFromCol();
+        int destRow = possibleMovement.getDestRow();
+        int destCol = possibleMovement.getDestCol();
         chessBoard[destRow][destCol] = chessBoard[fromRow][fromCol];
         chessBoard[fromRow][fromCol] = EMPTY;
     }
 
-    private void backTrack(double[][] chessBoard, Movement movement) {
+    private void backTrack(double[][] chessBoard, Movement possibleMovement) {
     }
 
     private boolean isWhiteSide(double piece) {
@@ -85,9 +87,9 @@ public class ChessBoardBUS {
         return (int) (Math.round((value - Math.floor(value)) * 100)) / 100.0;
     }
 
-    public double getChessValueBySymbol(char symbol, int row, boolean isWhite) {
+    public double getChessValueBySymbol(char symbol, int row, boolean isRed) {
         double additionalValue = 0;
-        if (isWhite == true) {
+        if (isRed == true) {
             additionalValue = 0.01;
         } else {
             additionalValue = 0.02;
@@ -111,10 +113,10 @@ public class ChessBoardBUS {
             return CANON + additionalValue;
         }
         if (symbol == 'P') {
-            if (isWhite == true && row >= 5) {
+            if (isRed == true && row >= 5) {
                 return SOLIDER_AFTER + additionalValue;
             }
-            if (isWhite == false && row <= 4) {
+            if (isRed == false && row <= 4) {
                 return SOLIDER_AFTER + additionalValue;
             }
             return SOLDIER_BEFORE + additionalValue;
@@ -122,8 +124,8 @@ public class ChessBoardBUS {
         return 0;
     }
 
-    private boolean hasEnemy(double[][] chessBoard, int i, int j, boolean isWhite) {
-        if (isWhite) {
+    private boolean hasEnemy(double[][] chessBoard, int i, int j, boolean isRed) {
+        if (isRed) {
             if (standardizedValue(chessBoard[i][j]) == 0.02) {
                 return true;
             }
@@ -135,8 +137,8 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfGeneral(double[][] chessBoard, int i, int j, boolean isWhite) {
-        if (!isWhite) {
+    private boolean checkPositionOfGeneral(double[][] chessBoard, int i, int j, boolean isRed) {
+        if (!isRed) {
             if (i < BOARD_HEIGHT && i >= BOARD_HEIGHT - 3 && j >= BOARD_WIDTH / 2 - 1 && j <= BOARD_WIDTH / 2 + 1) {
                 return true;
             }
@@ -148,8 +150,8 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfAdvisor(double[][] chessBoard, int i, int j, boolean isWhite) {
-        if (!isWhite) {
+    private boolean checkPositionOfAdvisor(double[][] chessBoard, int i, int j, boolean isRed) {
+        if (!isRed) {
             if ((i == 9 && (j == 3 || j == 5)) || (i == 8 && j == 4) || (i == 7 && (j == 3 || j == 5))) {
                 return true;
             }
@@ -161,8 +163,8 @@ public class ChessBoardBUS {
         return false;
     }
 
-    private boolean checkPositionOfElephant(double[][] chessBoard, int i, int j, boolean isWhite) {
-        if (!isWhite) {
+    private boolean checkPositionOfElephant(double[][] chessBoard, int i, int j, boolean isRed) {
+        if (!isRed) {
             if ((i == 9 && (j == 2 || j == 6)) || (i == 7 && (j == 4 || j == 0 || j == 8))
                     || (i == 5 && (j == 2 || j == 6))) {
                 return true;
@@ -248,41 +250,41 @@ public class ChessBoardBUS {
         }
     }
 
-    public void generateMovement(double[][] chessBoard, Movement[] movement, int level, int[] numberOfBranch,
-                                 boolean isWhite) {
-        numberOfBranch[level] = 0;
+    public void generateMovement(double[][] chessBoard, Movement[] possibleMovement, int level, int[] numberOfBranches,
+                                 boolean isRed) {
+        numberOfBranches[level] = 0;
         // for each piece in chess board
         for (int i = 0; i < BOARD_HEIGHT; i++) {
             for (int j = 0; j < BOARD_WIDTH; j++) {
                 double chess = chessBoard[i][j];
 
                 if (chessBoard[i][j] != EMPTY) {
-                    if (isWhite) {
+                    if (isRed) {
                         if (isWhiteSide(chess)) {
                             switch ((int) Math.floor(chess)) {
                                 case CHARIOT:
-                                    genChariotMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genChariotMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case CANON:
-                                    genCanonMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genCanonMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case GENERAL:
-                                    genGeneralMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genGeneralMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case SOLDIER_BEFORE:
-                                    genSoldierBeforeMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genSoldierBeforeMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case SOLIDER_AFTER:
-                                    genSoldierAfterMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genSoldierAfterMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case ADVISOR:
-                                    genAdvisorMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genAdvisorMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case ELEPHANT:
-                                    genElephantMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genElephantMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case HORSE:
-                                    genHorseMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genHorseMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                             }
 
@@ -291,28 +293,28 @@ public class ChessBoardBUS {
                         if (!isWhiteSide(chess)) {
                             switch ((int) Math.floor(chess)) {
                                 case CHARIOT:
-                                    genChariotMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genChariotMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case CANON:
-                                    genCanonMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genCanonMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case GENERAL:
-                                    genGeneralMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genGeneralMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case SOLDIER_BEFORE:
-                                    genSoldierBeforeMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genSoldierBeforeMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case SOLIDER_AFTER:
-                                    genSoldierAfterMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genSoldierAfterMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case ADVISOR:
-                                    genAdvisorMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genAdvisorMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case ELEPHANT:
-                                    genElephantMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genElephantMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                                 case HORSE:
-                                    genHorseMovement(chessBoard, i, j, numberOfBranch, movement, level, isWhite);
+                                    genHorseMovement(chessBoard, i, j, numberOfBranches, possibleMovement, level, isRed);
                                     break;
                             }
                         }
@@ -322,8 +324,8 @@ public class ChessBoardBUS {
         }
     }
 
-    private void genCanonMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
-                                  int level, boolean isWhite) {
+    private void genCanonMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[] possibleMovement,
+                                  int level, boolean isRed) {
         int chessRow = i;
         int chessCol = j;
 //        boolean checkCanon = true;
@@ -339,13 +341,13 @@ public class ChessBoardBUS {
                 Movement move = new Movement();
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -356,17 +358,17 @@ public class ChessBoardBUS {
             if (chessBoard[k][j] != EMPTY) {
                 for (int k2 = k + 1; k2 < BOARD_HEIGHT; k2++) {
                     if (chessBoard[k2][j] != EMPTY) {
-                        if (hasEnemy(chessBoard, k2, j, isWhite)) {
+                        if (hasEnemy(chessBoard, k2, j, isRed)) {
                             Movement move = new Movement();
                             move.setFrom(i, j);
                             move.setDest(k2, j);
-                            if (isWhite && !hasDuplicate(move)) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (isRed && !hasDuplicate(move)) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
-                            if (!isWhite) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (!isRed) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
                         }
 //                        checkCanon = false;
@@ -392,13 +394,13 @@ public class ChessBoardBUS {
                 Movement move = new Movement();
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -409,17 +411,17 @@ public class ChessBoardBUS {
             if (chessBoard[k][j] != EMPTY) {
                 for (int k2 = k - 1; k2 >= 0; k2--) {
                     if (chessBoard[k2][j] != EMPTY) {
-                        if (hasEnemy(chessBoard, k2, j, isWhite)) {
+                        if (hasEnemy(chessBoard, k2, j, isRed)) {
                             Movement move = new Movement();
                             move.setFrom(i, j);
                             move.setDest(k2, j);
-                            if (isWhite && !hasDuplicate(move)) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (isRed && !hasDuplicate(move)) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
-                            if (!isWhite) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (!isRed) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
                         }
 //                        checkCanon = false;
@@ -444,13 +446,13 @@ public class ChessBoardBUS {
                 Movement move = new Movement();
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessCol = j;
@@ -462,17 +464,17 @@ public class ChessBoardBUS {
             if (chessBoard[i][k] != EMPTY) {
                 for (int k2 = k + 1; k2 < BOARD_WIDTH; k2++) {
                     if (chessBoard[i][k2] != EMPTY) {
-                        if (hasEnemy(chessBoard, i, k2, isWhite)) {
+                        if (hasEnemy(chessBoard, i, k2, isRed)) {
                             Movement move = new Movement();
                             move.setFrom(i, j);
                             move.setDest(i, k2);
-                            if (isWhite && !hasDuplicate(move)) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (isRed && !hasDuplicate(move)) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
-                            if (!isWhite) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (!isRed) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
                         }
 //                        checkCanon = false;
@@ -497,13 +499,13 @@ public class ChessBoardBUS {
                 Movement move = new Movement();
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessCol = j;
@@ -515,17 +517,17 @@ public class ChessBoardBUS {
             if (chessBoard[i][k] != EMPTY) {
                 for (int k2 = k - 1; k2 >= 0; k2--) {
                     if (chessBoard[i][k2] != EMPTY) {
-                        if (hasEnemy(chessBoard, i, k2, isWhite)) {
+                        if (hasEnemy(chessBoard, i, k2, isRed)) {
                             Movement move = new Movement();
                             move.setFrom(i, j);
                             move.setDest(i, k2);
-                            if (isWhite && !hasDuplicate(move)) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (isRed && !hasDuplicate(move)) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
-                            if (!isWhite) {
-                                movement[numberOfBranch[level]] = move;
-                                numberOfBranch[level]++;
+                            if (!isRed) {
+                                possibleMovement[numberOfBranches[level]] = move;
+                                numberOfBranches[level]++;
                             }
                         }
 //                        checkCanon = false;
@@ -540,8 +542,8 @@ public class ChessBoardBUS {
 //        }
     }
 
-    private void genHorseMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
-                                  int level, boolean isWhite) {
+    private void genHorseMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[] possibleMovement,
+                                  int level, boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom left
@@ -549,18 +551,18 @@ public class ChessBoardBUS {
         chessCol -= 2;
         if (chessRow < BOARD_HEIGHT && chessCol >= 0) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -577,18 +579,18 @@ public class ChessBoardBUS {
         chessCol--;
         if (chessRow < BOARD_HEIGHT && chessCol >= 0) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -606,18 +608,18 @@ public class ChessBoardBUS {
         chessCol += 2;
         if (chessRow < BOARD_HEIGHT && chessCol < BOARD_WIDTH) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -634,18 +636,18 @@ public class ChessBoardBUS {
         chessCol++;
         if (chessRow < BOARD_HEIGHT && chessCol < BOARD_WIDTH) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -663,18 +665,18 @@ public class ChessBoardBUS {
         chessCol -= 2;
         if (chessRow >= 0 && chessCol >= 0) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -691,18 +693,18 @@ public class ChessBoardBUS {
         chessCol--;
         if (chessRow >= 0 && chessCol >= 0) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -720,18 +722,18 @@ public class ChessBoardBUS {
         chessCol += 2;
         if (chessRow >= 0 && chessCol < BOARD_WIDTH) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -748,18 +750,18 @@ public class ChessBoardBUS {
         chessCol++;
         if (chessRow >= 0 && chessCol < BOARD_WIDTH) {
             if (checkPositionOfHorse(chessBoard, i, j, chessRow, chessCol)
-                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                    && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("HORSE");
                 move.setFrom(i, j);
                 move.setDest(chessRow, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -771,9 +773,9 @@ public class ChessBoardBUS {
         }
     }
 
-    private void genElephantMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[]
-            movement, int level,
-                                     boolean isWhite) {
+    private void genElephantMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[]
+            possibleMovement, int level,
+                                     boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom left
@@ -786,19 +788,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i + 1][j - 1] == EMPTY
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isRed) && chessBoard[i + 1][j - 1] == EMPTY
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -819,19 +821,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i + 1][j + 1] == EMPTY
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isRed) && chessBoard[i + 1][j + 1] == EMPTY
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -852,19 +854,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i - 1][j - 1] == EMPTY
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isRed) && chessBoard[i - 1][j - 1] == EMPTY
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -885,19 +887,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isWhite) && chessBoard[i - 1][j + 1] == EMPTY
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfElephant(chessBoard, chessRow, chessCol, isRed) && chessBoard[i - 1][j + 1] == EMPTY
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ELEPHANT");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -908,9 +910,9 @@ public class ChessBoardBUS {
         }
     }
 
-    private void genAdvisorMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
+    private void genAdvisorMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[] possibleMovement,
                                     int level,
-                                    boolean isWhite) {
+                                    boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom left
@@ -923,19 +925,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isRed)
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -956,19 +958,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isRed)
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -989,19 +991,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isRed)
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -1022,19 +1024,19 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessRow != i && chessCol != j) {
-                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isWhite)
-                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isWhite))) {
+                if (checkPositionOfAdvisor(chessBoard, chessRow, chessCol, isRed)
+                        && (chessBoard[chessRow][chessCol] == EMPTY || hasEnemy(chessBoard, chessRow, chessCol, isRed))) {
                     Movement move = new Movement();
                     move.setMovementName("ADVISOR");
                     move.setFrom(i, j);
                     move.setDest(chessRow, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -1045,9 +1047,9 @@ public class ChessBoardBUS {
         }
     }
 
-    private void genChariotMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
+    private void genChariotMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[] possibleMovement,
                                     int level,
-                                    boolean isWhite) {
+                                    boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom
@@ -1063,26 +1065,26 @@ public class ChessBoardBUS {
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-            } else if (hasEnemy(chessBoard, chessRow, j, isWhite)) {
+            } else if (hasEnemy(chessBoard, chessRow, j, isRed)) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
                 chessRow = i;
                 break;
@@ -1103,26 +1105,26 @@ public class ChessBoardBUS {
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-            } else if (hasEnemy(chessBoard, chessRow, j, isWhite)) {
+            } else if (hasEnemy(chessBoard, chessRow, j, isRed)) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
                 chessRow = i;
                 break;
@@ -1143,26 +1145,26 @@ public class ChessBoardBUS {
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-            } else if (hasEnemy(chessBoard, i, chessCol, isWhite)) {
+            } else if (hasEnemy(chessBoard, i, chessCol, isRed)) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
                 chessCol = j;
                 break;
@@ -1183,26 +1185,26 @@ public class ChessBoardBUS {
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-            } else if (hasEnemy(chessBoard, i, chessCol, isWhite)) {
+            } else if (hasEnemy(chessBoard, i, chessCol, isRed)) {
                 Movement move = new Movement();
                 move.setMovementName("CHARIOT");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
                 chessCol = j;
                 break;
@@ -1214,8 +1216,8 @@ public class ChessBoardBUS {
     }
 
 
-    private void genGeneralMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[] movement,
-                                    int level, boolean isWhite) {
+    private void genGeneralMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[] possibleMovement,
+                                    int level, boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom
@@ -1224,20 +1226,20 @@ public class ChessBoardBUS {
             chessRow = i;
         }
         if (chessRow != i) {
-            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, j, isRed)
                     && !faceToFace(i, j, chessRow, chessCol, chessBoard)
-                    && ((int) Math.floor(chessBoard[chessRow][j]) == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite))) {
+                    && ((int) Math.floor(chessBoard[chessRow][j]) == EMPTY || hasEnemy(chessBoard, chessRow, j, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite == true && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed == true && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (isWhite == false) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed == false) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -1253,20 +1255,20 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessRow != i) {
-            if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, j, isRed)
                     && !faceToFace(i, j, chessRow, chessCol, chessBoard)
-                    && ((int) Math.floor(chessBoard[chessRow][j]) == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite))) {
+                    && ((int) Math.floor(chessBoard[chessRow][j]) == EMPTY || hasEnemy(chessBoard, chessRow, j, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
-                if (isWhite == true && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed == true && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (isWhite == false) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed == false) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessRow = i;
@@ -1283,20 +1285,20 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessCol != j) {
-            if (checkPositionOfGeneral(chessBoard, chessRow, chessCol, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, chessCol, isRed)
                     && !faceToFace(i, j, chessRow, chessCol, chessBoard)
-                    && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite))) {
+                    && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessCol = j;
@@ -1312,20 +1314,20 @@ public class ChessBoardBUS {
 //				break;
         }
         if (chessCol != j) {
-            if (checkPositionOfGeneral(chessBoard, chessRow, chessCol, isWhite)
+            if (checkPositionOfGeneral(chessBoard, chessRow, chessCol, isRed)
                     && !faceToFace(i, j, chessRow, chessCol, chessBoard)
-                    && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite))) {
+                    && (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isRed))) {
                 Movement move = new Movement();
                 move.setMovementName("GENERAL");
                 move.setFrom(i, j);
                 move.setDest(i, chessCol);
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             } else {
                 chessCol = j;
@@ -1333,15 +1335,15 @@ public class ChessBoardBUS {
         }
     }
 
-    private void genSoldierBeforeMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[]
-            movement, int level,
-                                          boolean isWhite) {
+    private void genSoldierBeforeMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[]
+            possibleMovement, int level,
+                                          boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom
-        if (isWhite) {
+        if (isRed) {
             chessRow++;
-            if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
+            if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isRed)) {
                 Movement move = new Movement();
                 move.setFrom(i, j);
                 move.setDest(chessRow, j);
@@ -1349,20 +1351,20 @@ public class ChessBoardBUS {
                 if (chessRow >= BOARD_HEIGHT / 2) {
                     move.setSoliderMovement(true);
                 }
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             }
         }
         // To top
         else {
             chessRow--;
-            if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
+            if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isRed)) {
                 Movement move = new Movement();
                 move.setMovementName("SOLIDER_BEFORE");
                 move.setFrom(i, j);
@@ -1370,13 +1372,13 @@ public class ChessBoardBUS {
                 if (chessRow < BOARD_HEIGHT / 2) {
                     move.setSoliderMovement(true);
                 }
-                if (isWhite && !hasDuplicate(move)) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (isRed && !hasDuplicate(move)) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
-                if (!isWhite) {
-                    movement[numberOfBranch[level]] = move;
-                    numberOfBranch[level]++;
+                if (!isRed) {
+                    possibleMovement[numberOfBranches[level]] = move;
+                    numberOfBranches[level]++;
                 }
             }
         }
@@ -1387,12 +1389,12 @@ public class ChessBoardBUS {
 //				chessCol = j;
 //				break;
 //			}
-//			if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite)) {
+//			if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isRed)) {
 //				Movement move = new Movement();
 //				move.setFrom(i, j);
 //				move.setDest(i, chessCol);
-//				movement[numberOfBranch[level]] = move;
-//				numberOfBranch[level]++;
+//				possibleMovement[numberOfBranches[level]] = move;
+//				numberOfBranches[level]++;
 //			}
 //		}
         // To left
@@ -1402,40 +1404,40 @@ public class ChessBoardBUS {
 //				chessCol = j;
 //				break;
 //			}
-//			if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite)) {
+//			if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isRed)) {
 //				Movement move = new Movement();
 //				move.setFrom(i, j);
 //				move.setDest(i, chessCol);
-//				movement[numberOfBranch[level]] = move;
-//				numberOfBranch[level]++;
+//				possibleMovement[numberOfBranches[level]] = move;
+//				numberOfBranches[level]++;
 //			}
 //		}
     }
 
-    private void genSoldierAfterMovement(double[][] chessBoard, int i, int j, int[] numberOfBranch, Movement[]
-            movement, int level,
-                                         boolean isWhite) {
+    private void genSoldierAfterMovement(double[][] chessBoard, int i, int j, int[] numberOfBranches, Movement[]
+            possibleMovement, int level,
+                                         boolean isRed) {
         int chessRow = i;
         int chessCol = j;
         // To bottom
-        if (chessRow < BOARD_HEIGHT && isWhite) {
+        if (chessRow < BOARD_HEIGHT && isRed) {
             chessRow++;
             if (chessRow == BOARD_HEIGHT) {
                 chessRow = i;
             }
             if (chessRow != i) {
-                if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
+                if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isRed)) {
                     Movement move = new Movement();
                     move.setFrom(i, j);
                     move.setMovementName("SOLIDER_AFTER");
                     move.setDest(chessRow, j);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -1446,25 +1448,25 @@ public class ChessBoardBUS {
         // To top
         chessRow = i;
         chessCol = j;
-        if (chessRow >= 0 && !isWhite) {
+        if (chessRow >= 0 && !isRed) {
             chessRow--;
             if (chessRow < 0) {
                 chessRow = i;
 //				break;
             }
             if (chessRow != i) {
-                if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isWhite)) {
+                if (chessBoard[chessRow][j] == EMPTY || hasEnemy(chessBoard, chessRow, j, isRed)) {
                     Movement move = new Movement();
                     move.setFrom(i, j);
                     move.setMovementName("SOLIDER_AFTER");
                     move.setDest(chessRow, j);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessRow = i;
@@ -1482,18 +1484,18 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessCol != j) {
-                if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite)) {
+                if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isRed)) {
                     Movement move = new Movement();
                     move.setFrom(i, j);
                     move.setMovementName("SOLIDER_AFTER");
                     move.setDest(i, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessCol = j;
@@ -1510,18 +1512,18 @@ public class ChessBoardBUS {
 //				break;
             }
             if (chessCol != j) {
-                if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isWhite)) {
+                if (chessBoard[i][chessCol] == EMPTY || hasEnemy(chessBoard, i, chessCol, isRed)) {
                     Movement move = new Movement();
                     move.setFrom(i, j);
                     move.setMovementName("SOLIDER_AFTER");
                     move.setDest(i, chessCol);
-                    if (isWhite && !hasDuplicate(move)) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (isRed && !hasDuplicate(move)) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
-                    if (!isWhite) {
-                        movement[numberOfBranch[level]] = move;
-                        numberOfBranch[level]++;
+                    if (!isRed) {
+                        possibleMovement[numberOfBranches[level]] = move;
+                        numberOfBranches[level]++;
                     }
                 } else {
                     chessCol = j;
@@ -1559,41 +1561,41 @@ public class ChessBoardBUS {
     }
 
     public int minimax(int depth, double[][] temp, int level, boolean isMaximizingPlayer, int alpha, int beta,
-                       boolean isWhite) {
+                       boolean isRed) {
         double[][] chessBoard = new double[BOARD_HEIGHT][BOARD_WIDTH];
         for (int i = 0; i < chessBoard.length; i++) {
             for (int j = 0; j < chessBoard[i].length; j++) {
                 chessBoard[i][j] = temp[i][j];
             }
         }
-        int[] numberOfBranch = new int[50];
-        Movement[] movement = new Movement[200];
+        int[] numberOfBranches = new int[50];
+        Movement[] possibleMovement = new Movement[200];
         if (depth == 0) {
             return evaluate(chessBoard);
         }
-        generateMovement(chessBoard, movement, level, numberOfBranch, isWhite);
+        generateMovement(chessBoard, possibleMovement, level, numberOfBranches, isRed);
         if (isMaximizingPlayer) {
             int bestValue = -Integer.MAX_VALUE;
-            for (int k = 0; k < numberOfBranch[level]; k++) {
+            for (int k = 0; k < numberOfBranches[level]; k++) {
                 // try
                 double enemyChessValue = 0;
-                int fromRow = movement[k].getFromRow();
-                int fromCol = movement[k].getFromCol();
-                int destRow = movement[k].getDestRow();
-                int destCol = movement[k].getDestCol();
-                if (hasEnemy(chessBoard, destRow, destCol, isWhite)) {
+                int fromRow = possibleMovement[k].getFromRow();
+                int fromCol = possibleMovement[k].getFromCol();
+                int destRow = possibleMovement[k].getDestRow();
+                int destCol = possibleMovement[k].getDestCol();
+                if (hasEnemy(chessBoard, destRow, destCol, isRed)) {
                     enemyChessValue = chessBoard[destRow][destCol];
                 }
                 chessBoard[destRow][destCol] = chessBoard[fromRow][fromCol];
                 chessBoard[fromRow][fromCol] = EMPTY;
-                if (movement[k].isSoliderMovement()) {
+                if (possibleMovement[k].isSoliderMovement()) {
                     chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_WHITE;
                 }
                 int value = 0;
-                if (enemyChessValue == 120.02) {
+                if (enemyChessValue == GENERAL_BLACK) {
                     value = 999999999 - level;
                 } else {
-                    value = minimax(depth - 1, chessBoard, level + 1, false, alpha, beta, !isWhite);
+                    value = minimax(depth - 1, chessBoard, level + 1, false, alpha, beta, !isRed);
                 }
                 if (value > bestValue) {
                     bestValue = Math.max(bestValue, value);
@@ -1617,7 +1619,7 @@ public class ChessBoardBUS {
                 // backtrack
                 chessBoard[fromRow][fromCol] = chessBoard[destRow][destCol];
                 chessBoard[destRow][destCol] = enemyChessValue;
-                if (movement[k].isSoliderMovement()) {
+                if (possibleMovement[k].isSoliderMovement()) {
                     chessBoard[destRow][destCol] = SOLDIER_BEFORE_CROSSING_RIVER_WHITE;
                 }
                 if (beta <= alpha) {
@@ -1627,27 +1629,27 @@ public class ChessBoardBUS {
             return bestValue;
         } else {
             int worstValue = Integer.MAX_VALUE;
-            for (int k = 0; k < numberOfBranch[level]; k++) {
+            for (int k = 0; k < numberOfBranches[level]; k++) {
                 // try
                 double enemyChessValue = 0;
-                int fromRow = movement[k].getFromRow();
-                int fromCol = movement[k].getFromCol();
-                int destRow = movement[k].getDestRow();
-                int destCol = movement[k].getDestCol();
-                if (hasEnemy(chessBoard, destRow, destCol, isWhite)) {
+                int fromRow = possibleMovement[k].getFromRow();
+                int fromCol = possibleMovement[k].getFromCol();
+                int destRow = possibleMovement[k].getDestRow();
+                int destCol = possibleMovement[k].getDestCol();
+                if (hasEnemy(chessBoard, destRow, destCol, isRed)) {
                     enemyChessValue = chessBoard[destRow][destCol];
                 }
                 chessBoard[destRow][destCol] = chessBoard[fromRow][fromCol];
                 chessBoard[fromRow][fromCol] = EMPTY;
-                if (movement[k].isSoliderMovement()) {
+                if (possibleMovement[k].isSoliderMovement()) {
                     chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_BLACK;
                 }
                 int value = 0;
                 //Cắt nhánh
-                if (enemyChessValue == 120.01) {
+                if (enemyChessValue == GENERAL_RED) {
                     value = -999999999 - level;
                 } else {
-                    value = minimax(depth - 1, chessBoard, level + 1, true, alpha, beta, !isWhite);
+                    value = minimax(depth - 1, chessBoard, level + 1, true, alpha, beta, !isRed);
                 }
                 if (value < worstValue) {
                     worstValue = Math.min(value, worstValue);
@@ -1657,7 +1659,7 @@ public class ChessBoardBUS {
                 // backtrack
                 chessBoard[fromRow][fromCol] = chessBoard[destRow][destCol];
                 chessBoard[destRow][destCol] = enemyChessValue;
-                if (movement[k].isSoliderMovement()) {
+                if (possibleMovement[k].isSoliderMovement()) {
                     chessBoard[destRow][destCol] = SOLDIER_BEFORE_CROSSING_RIVER_WHITE;
                 }
                 if (alpha >= beta) {
@@ -1670,31 +1672,31 @@ public class ChessBoardBUS {
 
     public Movement checkmate(int depth, double[][] temp, int level, boolean isMaximizingPlayer, int alpha,
                               int beta,
-                              boolean isWhite) {
+                              boolean isRed) {
         double[][] chessBoard = new double[BOARD_HEIGHT][BOARD_WIDTH];
         for (int i = 0; i < chessBoard.length; i++) {
             for (int j = 0; j < chessBoard[i].length; j++) {
                 chessBoard[i][j] = temp[i][j];
             }
         }
-        int[] numberOfBranch = new int[50];
-        Movement[] movement = new Movement[200];
+        int[] numberOfBranches = new int[50];
+        Movement[] possibleMovement = new Movement[200];
         Movement movementCheckmate = new Movement();
-        generateMovement(chessBoard, movement, level, numberOfBranch, isWhite);
+        generateMovement(chessBoard, possibleMovement, level, numberOfBranches, isRed);
         int bestValue = -Integer.MAX_VALUE;
-        for (int k = 0; k < numberOfBranch[level]; k++) {
+        for (int k = 0; k < numberOfBranches[level]; k++) {
             // try
             double enemyChessValue = 0;
-            int fromRow = movement[k].getFromRow();
-            int fromCol = movement[k].getFromCol();
-            int destRow = movement[k].getDestRow();
-            int destCol = movement[k].getDestCol();
-            if (hasEnemy(chessBoard, destRow, destCol, isWhite)) {
+            int fromRow = possibleMovement[k].getFromRow();
+            int fromCol = possibleMovement[k].getFromCol();
+            int destRow = possibleMovement[k].getDestRow();
+            int destCol = possibleMovement[k].getDestCol();
+            if (hasEnemy(chessBoard, destRow, destCol, isRed)) {
                 enemyChessValue = chessBoard[destRow][destCol];
             }
             chessBoard[destRow][destCol] = chessBoard[fromRow][fromCol];
             chessBoard[fromRow][fromCol] = EMPTY;
-            if (movement[k].isSoliderMovement()) {
+            if (possibleMovement[k].isSoliderMovement()) {
                 chessBoard[destRow][destCol] = SOLIDER_AFTER_CROSSING_RIVER_WHITE;
             }
             int value = 0;
@@ -1719,7 +1721,7 @@ public class ChessBoardBUS {
             // backtrack
             chessBoard[fromRow][fromCol] = chessBoard[destRow][destCol];
             chessBoard[destRow][destCol] = enemyChessValue;
-            if (movement[k].isSoliderMovement()) {
+            if (possibleMovement[k].isSoliderMovement()) {
                 chessBoard[destRow][destCol] = SOLDIER_BEFORE_CROSSING_RIVER_WHITE;
             }
             if (beta <= alpha) {
@@ -1730,118 +1732,118 @@ public class ChessBoardBUS {
 
     }
 
-    public void initChessBoard() {
-        // initialize chessBoard
-        initChessPosition();
-//		initChessColor();
+//    public void initChessBoard() {
+//        // initialize chessBoard
+//        initChessPosition();
+////		initChessColor();
+//
+//        for (int i = 0; i < BOARD_HEIGHT; i++) {
+//            for (int j = 0; j < BOARD_WIDTH; j++) {
+//                System.out.print(chess[i][j] + "   ");
+//            }
+//            System.out.println();
+//        }
+//
+//    }
+//
+//    private void initChessColor() {
+//        for (int i = 0; i < BOARD_HEIGHT; i++) {
+//            for (int j = 0; j < BOARD_WIDTH; j++) {
+//                chessColor[i][j] = 0;
+//            }
+//        }
+//        int DARK = 2;
+//        int WHITE = 1;
+//
+//        chessColor[0][0] = DARK;
+//        chessColor[0][1] = DARK;
+//        chessColor[0][2] = DARK;
+//        chessColor[0][3] = DARK;
+//        chessColor[0][4] = DARK;
+//        chessColor[0][5] = DARK;
+//        chessColor[0][6] = DARK;
+//        chessColor[0][7] = DARK;
+//        chessColor[0][8] = DARK;
+//
+//        chessColor[9][0] = WHITE;
+//        chessColor[9][1] = WHITE;
+//        chessColor[9][2] = WHITE;
+//        chessColor[9][3] = WHITE;
+//        chessColor[9][4] = WHITE;
+//        chessColor[9][5] = WHITE;
+//        chessColor[9][6] = WHITE;
+//        chessColor[9][7] = WHITE;
+//        chessColor[9][8] = WHITE;
+//
+//        for (int i = 0; i < BOARD_WIDTH; i += 2) {
+//            chessColor[3][i] = DARK;
+//            chessColor[6][i] = WHITE;
+//        }
+//
+//        chessColor[2][1] = DARK;
+//        chessColor[7][1] = WHITE;
+//        chessColor[2][7] = DARK;
+//        chessColor[7][7] = WHITE;
+//    }
 
-        for (int i = 0; i < BOARD_HEIGHT; i++) {
-            for (int j = 0; j < BOARD_WIDTH; j++) {
-                System.out.print(chess[i][j] + "   ");
-            }
-            System.out.println();
-        }
-
-    }
-
-    private void initChessColor() {
-        for (int i = 0; i < BOARD_HEIGHT; i++) {
-            for (int j = 0; j < BOARD_WIDTH; j++) {
-                chessColor[i][j] = 0;
-            }
-        }
-        int DARK = 2;
-        int WHITE = 1;
-
-        chessColor[0][0] = DARK;
-        chessColor[0][1] = DARK;
-        chessColor[0][2] = DARK;
-        chessColor[0][3] = DARK;
-        chessColor[0][4] = DARK;
-        chessColor[0][5] = DARK;
-        chessColor[0][6] = DARK;
-        chessColor[0][7] = DARK;
-        chessColor[0][8] = DARK;
-
-        chessColor[9][0] = WHITE;
-        chessColor[9][1] = WHITE;
-        chessColor[9][2] = WHITE;
-        chessColor[9][3] = WHITE;
-        chessColor[9][4] = WHITE;
-        chessColor[9][5] = WHITE;
-        chessColor[9][6] = WHITE;
-        chessColor[9][7] = WHITE;
-        chessColor[9][8] = WHITE;
-
-        for (int i = 0; i < BOARD_WIDTH; i += 2) {
-            chessColor[3][i] = DARK;
-            chessColor[6][i] = WHITE;
-        }
-
-        chessColor[2][1] = DARK;
-        chessColor[7][1] = WHITE;
-        chessColor[2][7] = DARK;
-        chessColor[7][7] = WHITE;
-    }
-
-    private void initChessPosition() {
-        for (int i = 0; i < BOARD_HEIGHT; i++) {
-            for (int j = 0; j < BOARD_WIDTH; j++) {
-                this.chess[i][j] = 0;
-            }
-        }
-
-        // Declare white chess value
-        double GENERAL_WHITE = 999999.01; // tướng
-        double ADVISOR_WHITE = 20.01; // sĩ
-        double ELEPHANT_WHITE = 25.01; // tượng
-        double HORSE_WHITE = 40.01; // mã
-        double CHARIOT_WHITE = 90.01; // xe
-        double CANON_WHITE = 50.01; // pháo
-        double SOLDIER_BEFORE_CROSSING_RIVER_WHITE = 10.01; // tốt trước khi qua sông
-        double SOLIDER_AFTER_CROSSING_RIVER_WHITE = 15.01; // tốt sau khi qua sông
-        double EMPTY_WHITE = 0.01;
-
-        // Declare black chess value
-        double GENERAL_BLACK = 999999.02;
-        double ADVISOR_BLACK = 20.02;
-        double ELEPHANT_BLACK = 25.02;
-        double HORSE_BLACK = 40.02;
-        double CHARIOT_BLACK = 90.02;
-        double CANON_BLACK = 50.02;
-        double SOLDIER_BEFORE_CROSSING_RIVER_BLACK = 10.02;
-        double SOLIDER_AFTER_CROSSING_RIVER_BLACK = 15.02;
-        double EMPTY_BLACK = 0.02;
-
-        chess[0][0] = CHARIOT_WHITE;
-        chess[0][1] = HORSE_WHITE;
-        chess[0][2] = ELEPHANT_WHITE;
-        chess[0][3] = ADVISOR_WHITE;
-        chess[0][4] = GENERAL_WHITE;
-        chess[0][5] = ADVISOR_WHITE;
-        chess[0][6] = ELEPHANT_WHITE;
-        chess[0][7] = HORSE_WHITE;
-        chess[0][8] = CHARIOT_WHITE;
-
-        chess[9][0] = CHARIOT_BLACK;
-        chess[9][1] = HORSE_BLACK;
-        chess[9][2] = ELEPHANT_BLACK;
-        chess[9][3] = ADVISOR_BLACK;
-        chess[9][4] = GENERAL_BLACK;
-        chess[9][5] = ADVISOR_BLACK;
-        chess[9][6] = ELEPHANT_BLACK;
-        chess[9][7] = HORSE_BLACK;
-        chess[9][8] = CHARIOT_BLACK;
-
-        for (int i = 0; i < BOARD_WIDTH; i += 2) {
-            chess[3][i] = SOLDIER_BEFORE_CROSSING_RIVER_WHITE;
-            chess[6][i] = SOLDIER_BEFORE_CROSSING_RIVER_BLACK;
-        }
-
-
-        chess[2][1] = CANON_WHITE;
-        chess[2][7] = CANON_WHITE;
-        chess[7][1] = CANON_BLACK;
-        chess[7][7] = CANON_BLACK;
-    }
+//    private void initChessPosition() {
+//        for (int i = 0; i < BOARD_HEIGHT; i++) {
+//            for (int j = 0; j < BOARD_WIDTH; j++) {
+//                this.chess[i][j] = 0;
+//            }
+//        }
+//
+//        // Declare white chess value
+//        double GENERAL_WHITE = 999999.01; // tướng
+//        double ADVISOR_WHITE = 20.01; // sĩ
+//        double ELEPHANT_WHITE = 25.01; // tượng
+//        double HORSE_WHITE = 40.01; // mã
+//        double CHARIOT_WHITE = 90.01; // xe
+//        double CANON_WHITE = 50.01; // pháo
+//        double SOLDIER_BEFORE_CROSSING_RIVER_WHITE = 10.01; // tốt trước khi qua sông
+//        double SOLIDER_AFTER_CROSSING_RIVER_WHITE = 15.01; // tốt sau khi qua sông
+//        double EMPTY_WHITE = 0.01;
+//
+//        // Declare black chess value
+//        double GENERAL_BLACK = 999999.02;
+//        double ADVISOR_BLACK = 20.02;
+//        double ELEPHANT_BLACK = 25.02;
+//        double HORSE_BLACK = 40.02;
+//        double CHARIOT_BLACK = 90.02;
+//        double CANON_BLACK = 50.02;
+//        double SOLDIER_BEFORE_CROSSING_RIVER_BLACK = 10.02;
+//        double SOLIDER_AFTER_CROSSING_RIVER_BLACK = 15.02;
+//        double EMPTY_BLACK = 0.02;
+//
+//        chess[0][0] = CHARIOT_WHITE;
+//        chess[0][1] = HORSE_WHITE;
+//        chess[0][2] = ELEPHANT_WHITE;
+//        chess[0][3] = ADVISOR_WHITE;
+//        chess[0][4] = GENERAL_WHITE;
+//        chess[0][5] = ADVISOR_WHITE;
+//        chess[0][6] = ELEPHANT_WHITE;
+//        chess[0][7] = HORSE_WHITE;
+//        chess[0][8] = CHARIOT_WHITE;
+//
+//        chess[9][0] = CHARIOT_BLACK;
+//        chess[9][1] = HORSE_BLACK;
+//        chess[9][2] = ELEPHANT_BLACK;
+//        chess[9][3] = ADVISOR_BLACK;
+//        chess[9][4] = GENERAL_BLACK;
+//        chess[9][5] = ADVISOR_BLACK;
+//        chess[9][6] = ELEPHANT_BLACK;
+//        chess[9][7] = HORSE_BLACK;
+//        chess[9][8] = CHARIOT_BLACK;
+//
+//        for (int i = 0; i < BOARD_WIDTH; i += 2) {
+//            chess[3][i] = SOLDIER_BEFORE_CROSSING_RIVER_WHITE;
+//            chess[6][i] = SOLDIER_BEFORE_CROSSING_RIVER_BLACK;
+//        }
+//
+//
+//        chess[2][1] = CANON_WHITE;
+//        chess[2][7] = CANON_WHITE;
+//        chess[7][1] = CANON_BLACK;
+//        chess[7][7] = CANON_BLACK;
+//    }
 }
