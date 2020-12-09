@@ -181,9 +181,8 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
             }
         }
 
-        updateChessPossibleMoves();
-
         checkmate();
+        updateChessPossibleMoves();
     })
 
 }

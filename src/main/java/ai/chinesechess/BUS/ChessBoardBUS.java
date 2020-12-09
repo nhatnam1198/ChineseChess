@@ -1,6 +1,5 @@
 package ai.chinesechess.BUS;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ai.chinesechess.models.Movement;
@@ -1220,11 +1219,9 @@ public class ChessBoardBUS {
         int chessRow = i;
         int chessCol = j;
         // To bottom
-//		while (chessRow < BOARD_HEIGHT) {
         chessRow++;
         if (chessRow >= BOARD_HEIGHT || (chessRow < 7 && chessRow >= 3)) {
             chessRow = i;
-//				break;
         }
         if (chessRow != i) {
             if (checkPositionOfGeneral(chessBoard, chessRow, j, isWhite)
@@ -1244,10 +1241,8 @@ public class ChessBoardBUS {
                 }
             } else {
                 chessRow = i;
-//				break;
             }
         }
-//		}
         // To top
 //		while (chessRow >= 0) {
         chessRow = i;
@@ -1552,6 +1547,17 @@ public class ChessBoardBUS {
         return score1 + score2;
     }
 
+    public boolean isExitGeneral(double[][] chessBoard) {
+        for (int i = 0; i <= 2; i++) {
+            for (int j = 3; j <= 5; j++) {
+                if ((int) Math.floor(chessBoard[i][j]) == GENERAL) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public int minimax(int depth, double[][] temp, int level, boolean isMaximizingPlayer, int alpha, int beta,
                        boolean isWhite) {
         double[][] chessBoard = new double[BOARD_HEIGHT][BOARD_WIDTH];
@@ -1599,6 +1605,9 @@ public class ChessBoardBUS {
                             finalMovement.setGameEnd(true);
                         } else {
                             finalMovement.setGameEnd(false);
+                        }
+                        if (!isExitGeneral(chessBoard)) {
+                            return bestValue;
                         }
                     }
                 }

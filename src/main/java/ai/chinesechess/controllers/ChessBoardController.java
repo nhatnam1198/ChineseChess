@@ -35,7 +35,7 @@ public class ChessBoardController {
             }
             realChessBoard[Integer.parseInt(String.valueOf(numericPositionString.charAt(0)))][Integer.parseInt(String.valueOf(numericPositionString.charAt(1)))] = value;
         }
-        chessBoardBUS.minimax(1, realChessBoard, 0, true, -Integer.MAX_VALUE, Integer.MAX_VALUE, true);
+        chessBoardBUS.minimax(4, realChessBoard, 0, true, -Integer.MAX_VALUE, Integer.MAX_VALUE, true);
         System.out.println("============================================================================= mmax");
         Movement finalMovement = chessBoardBUS.getFinalMovement();
 //        int finalFromRow = chessBoardBUS.getFinalMovement().getFromRow();
