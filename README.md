@@ -1,6 +1,6 @@
 # ChineseChessAI
 This application is built based on Minimax algorithm.
-
+Demo: https://chinese-chess-ai.herokuapp.com/
 ## Mini max pseudo-code 
 ```function minimax(node, depth, maximizingPlayer) is
     if depth = 0 or node is a terminal node then
