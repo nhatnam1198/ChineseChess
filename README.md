@@ -16,3 +16,5 @@ This application is built based on Minimax algorithm.
             value := min(value, minimax(child, depth − 1, TRUE))
         return value
 ```
+## Document (Vietnamese)
+https://utcedu-my.sharepoint.com/:w:/g/personal/nam171200791_st_utc_edu_vn/ETatgjK4k1lBpQhwQm8m5icBrT826fuo8QW-IdAjiz_TEw?e=iAYe25
