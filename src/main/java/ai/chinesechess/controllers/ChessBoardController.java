@@ -1,6 +1,6 @@
 package ai.chinesechess.controllers;
 
-import ai.chinesechess.BUS.ChessBoardBUS;
+import ai.chinesechess.BUS.*;
 import ai.chinesechess.models.DTO.LegalMovementDTO;
 import ai.chinesechess.models.Movement;
 import org.springframework.web.bind.annotation.*;

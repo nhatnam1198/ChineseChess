@@ -12,6 +12,7 @@ $('#btnReload').on('click', function () {
     }
 });
 
+let DOMAIN = 'https://chinese-chess-ai.herokuapp.com/'
 let board;
 let possibleMoves;
 const BOARD_HEIGHT = 10;
@@ -117,7 +118,7 @@ function onDrop(source, target, piece, newPos, oldPos, orientation){
     board.position(newPos)
 
     var settings = {
-        "url": "http://localhost:6030/movement?position=",
+        "url": DOMAIN + "movement?position=",
         "method": "POST",
         "async": "false",
         "headers": {
@@ -160,7 +161,7 @@ function updateChessPossibleMoves(){
     console.log("function is called");
     console.log(board.position());
     var settings = {
-        "url": "http://localhost:6030/legalMovements",
+        "url": DOMAIN + "legalMovements",
         "method": "POST",
         "headers": {
             "Content-Type": "application/json"
@@ -178,7 +179,7 @@ function updateChessPossibleMoves(){
 
 function checkmate() {
     var settings = {
-        "url": "http://localhost:6030/checkmate?position=",
+        "url": DOMAIN + "checkmate?position=",
         "method": "POST",
         "async": "false",
         "headers": {
